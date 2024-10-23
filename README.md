@@ -1,4 +1,9 @@
-# Aigualerta
+<p align="center">
+<img src="https://i.imgur.com/u9FsL85.png" alt="drawing" width="200" align="center"/>
+</p>
+
+---
+
 This is a project being developed with the purpose taking one of the data challenges from Aigües de Barcelona.
 ## Authors
 * Yuma Ishigooka (Project Manager)
