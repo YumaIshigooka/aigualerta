@@ -1,4 +1,5 @@
 import csv
+import os
 from datetime import datetime
 
 def parse_water_consumption_data(file_path):
@@ -45,6 +46,7 @@ def parse_water_consumption_data(file_path):
 
 
 # Example usage:
-file_path = '/Users/ar-suleyman.hasanov/Documents/github/aigualerta/data/aigues_dataset/daily_dataset.csv'
+dirname = os.path.dirname(__file__)
+file_path = os.path.join(dirname, '../data/aigues_dataset/daily_dataset.csv')
 parsed_data = parse_water_consumption_data(file_path)
 print(parsed_data[:5])  
