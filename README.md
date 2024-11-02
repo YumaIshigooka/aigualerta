@@ -4,6 +4,8 @@
 
 ---
 
+[![Static Badge](https://img.shields.io/badge/License-MIT_License-orange)](https://opensource.org/license/mit)
+
 This is a project being developed with the purpose taking one of the data challenges from Aigües de Barcelona.
 
 ## Installation
