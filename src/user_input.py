@@ -1,16 +1,7 @@
 import streamlit as st 
 import pandas as pd
-import seaborn as sns
-import numpy as np
 
 # To execute this code you can use the command 'streamlit run user_input.py'
-
-st.set_page_config(
-    page_title="Aigualerta",
-    page_icon="🧊",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
 
 # Define the columns that are required for the transformation
 EXPECTED_COLUMNS = [
@@ -87,31 +78,40 @@ def transform_and_clean_data(df):
 
     return df_cleaned
 
-# Title and subtitle
-st.title("Aigualerta")
-st.subheader("Project developed by: Jinsong Liu, Mar Gutierrez, Yuma Ishigooka, Adrià León and Suleyman Hasanov")
+def main():
+    st.set_page_config(
+    page_title="Aigualerta",
+    page_icon="🧊",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
-# File upload section
-st.header("Upload your data")
+    # Title and subtitle
+    st.title("Aigualerta")
+    st.subheader("Project developed by: Jinsong Liu, Mar Gutierrez, Yuma Ishigooka, Adrià León and Suleyman Hasanov")
 
-# Option to upload a CSV file
-csv_file = st.file_uploader("Upload a CSV file", type="csv")
-if csv_file is not None:
-    df = load_csv(csv_file)
-    st.write("CSV Data Preview:")
-    st.write(df.head())  # Show initial preview of uploaded data
-    
-    # Button to trigger transformation and cleaning for CSV data
-    if st.button("Transform and Clean CSV Data"):
-        df_cleaned = transform_and_clean_data(df)
+    # File upload section
+    st.header("Upload your data")
 
-# Option to upload a Parquet file
-parquet_file = st.file_uploader("Upload a Parquet file", type="parquet")
-if parquet_file is not None:
-    df = load_parquet(parquet_file)
-    st.write("Parquet Data Preview:")
-    st.write(df.head())  # Show initial preview of uploaded data
-    
-    # Button to trigger transformation and cleaning for Parquet data
-    if st.button("Transform and Clean Parquet Data"):
-        df_cleaned = transform_and_clean_data(df)
+    # Option to upload a CSV file
+    csv_file = st.file_uploader("Upload a CSV file", type="csv")
+    if csv_file is not None:
+        df = load_csv(csv_file)
+        st.write("CSV Data Preview:")
+        st.write(df.head())  # Show initial preview of uploaded data
+        
+        # Button to trigger transformation and cleaning for CSV data
+        if st.button("Transform and Clean CSV Data"):
+            df_cleaned = transform_and_clean_data(df)
+
+    # Option to upload a Parquet file
+    parquet_file = st.file_uploader("Upload a Parquet file", type="parquet")
+    if parquet_file is not None:
+        df = load_parquet(parquet_file)
+        st.write("Parquet Data Preview:")
+        st.write(df.head())  # Show initial preview of uploaded data
+        
+        # Button to trigger transformation and cleaning for Parquet data
+        if st.button("Transform and Clean Parquet Data"):
+            df_cleaned = transform_and_clean_data(df)
+main()
