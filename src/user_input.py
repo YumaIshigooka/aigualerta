@@ -88,7 +88,7 @@ def main():
 
     # Title and subtitle
     st.title("Aigualerta")
-    st.subheader("Project developed by: Jinsong Liu, Mar Gutierrez, Yuma Ishigooka, Adrià León and Suleyman Hasanov")
+    st.subheader("Project developed by: Jinsong Liu, Marc Gutierrez, Yuma Ishigooka, Adrià León and Suleyman Hasanov")
 
     # File upload section
     st.header("Upload your data")
