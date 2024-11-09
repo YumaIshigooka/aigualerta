@@ -2,4 +2,6 @@ pandas
 numpy
 pyarrow
 matplotlib
+scikit-learn
+seaborn
 streamlit
