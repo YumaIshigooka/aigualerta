@@ -5,23 +5,35 @@ import pandas as pd
 
 # Define the columns that are required for the transformation
 EXPECTED_COLUMNS = [
-    'Data/Fecha/Date',
-    'Índex de lectura (L/h)/Índice de lectura (L/h)/Reading index (L/h)',
-    'Pòlissa/Póliza/Policy',
-    'Tecnologia/Tecnología/Technology',
-    'Diàmetre comptador (cm)/Diámetro contador (cm)/Counter diameter (cm)',
-    'Ús/Uso/Use',
-    'Tipus d\'habitatge/Tipo de vivienda/Type of housing'
+    'DATETIME',
+    'CONSUMPTION',
+    'POLICY',
+    'TECHNOLOGY',
+    'DIAMETER',
+    'USAGE',
+    'HOUSING'
 ]
+
+short_names = {
+    'Pòlissa/Póliza/Policy': 'POLICY',
+    'Tecnologia/Tecnología/Technology': 'TECHNOLOGY',
+    'Diàmetre comptador (cm)/Diámetro contador (cm)/Counter diameter (cm)': 'DIAMETER',
+    'Ús/Uso/Use': 'USAGE',
+    "Tipus d'habitatge/Tipo de vivienda/Type of housing": 'HOUSING',
+    'Data/Fecha/Date': 'DATETIME',
+    'Índex de lectura (L/h)/Índice de lectura (L/h)/Reading index (L/h)': 'CONSUMPTION',
+}
 
 def load_csv(file):
     # Load the dataset using pandas from the uploaded file
     df = pd.read_csv(file)
+    df = df.rename(columns=short_names)
     return df
 
 def load_parquet(file):
     # Load the dataset using pandas from the uploaded file
     df = pd.read_parquet(file)
+    df = df.rename(columns=short_names)
     return df
 
 def transform_and_clean_data(df):
@@ -37,14 +49,14 @@ def transform_and_clean_data(df):
 
     # Proceed with the transformation if all columns are present
     # Convert 'Data/Fecha/Date' column to datetime format
-    df['Data/Fecha/Date'] = pd.to_datetime(df['Data/Fecha/Date'])
+    df['DATETIME'] = pd.to_datetime(df['DATETIME'])
 
     # Extract the date and hour separately
-    df['Date'] = df['Data/Fecha/Date'].dt.date
-    df['Hour'] = df['Data/Fecha/Date'].dt.hour
+    df['Date'] = df['DATETIME'].dt.date
+    df['Hour'] = df['DATETIME'].dt.hour
 
     # Pivot the table so that each hour is a separate column
-    df_pivot = df.pivot_table(index='Date', columns='Hour', values='Índex de lectura (L/h)/Índice de lectura (L/h)/Reading index (L/h)')
+    df_pivot = df.pivot_table(index='Date', columns='Hour', values='CONSUMPTION')
 
     # Rename columns as hour0, hour1, ..., hour23
     df_pivot.columns = [f'hour{int(hour)}' for hour in df_pivot.columns]
@@ -53,15 +65,14 @@ def transform_and_clean_data(df):
     df_pivot = df_pivot.reset_index()
 
     # Deduplicate rows based on 'Date' and keep relevant columns
-    df_deduped = df.drop_duplicates(subset='Date')[['Date', 'Pòlissa/Póliza/Policy', 'Tecnologia/Tecnología/Technology',
-                                                    'Diàmetre comptador (cm)/Diámetro contador (cm)/Counter diameter (cm)',
-                                                    'Ús/Uso/Use', 'Tipus d\'habitatge/Tipo de vivienda/Type of housing']]
+    df_deduped = df.drop_duplicates(subset='Date')[['Date', 'POLICY', 'TECHNOLOGY', 'DIAMETER', 'USAGE', 'HOUSING']]
+
 
     # Merge the pivot table with the deduplicated columns
     df_final = pd.merge(df_pivot, df_deduped, on='Date', how='left')
 
     # Reorder columns
-    cols = ['Pòlissa/Póliza/Policy', 'Date'] + [col for col in df_final.columns if col not in ['Pòlissa/Póliza/Policy', 'Date']]
+    cols = ['POLICY', 'Date'] + [col for col in df_final.columns if col not in ['POLICY', 'Date']]
     df_final = df_final[cols]
 
     # Drop rows with NaNs in any hourly column
