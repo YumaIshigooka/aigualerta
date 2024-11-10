@@ -2,16 +2,6 @@ pandas
 numpy
 pyarrow
 matplotlib
-<<<<<<< HEAD
-<<<<<<< HEAD
-scikit-learn
-seaborn
-
-=======
-streamlit
->>>>>>> 7df85c6 (main added, requirements.txt filled and ipynb moved)
-=======
 scikit-learn
 seaborn
 streamlit
->>>>>>> bd51cb7 (conflicts solved)
