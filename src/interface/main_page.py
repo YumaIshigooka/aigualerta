@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-# To execute this code you can use the command 'streamlit run user_input.py'
+# To execute this code you can use the command 'streamlit run main_page.py'
 
 # Define the columns that are required for the transformation
 EXPECTED_COLUMNS = [
@@ -26,6 +26,10 @@ short_names = {
     'Data/Fecha/Date': 'DATETIME',
     'Índex de lectura (L/h)/Índice de lectura (L/h)/Reading index (L/h)': 'CONSUMPTION',
 }
+
+# Initialize session state for the toggle button
+if "show_dump_plot" not in st.session_state:
+    st.session_state["show_dump_plot"] = False  # Default is hidden
 
 def load_csv(file):
     # Load the dataset using pandas from the uploaded file
@@ -150,7 +154,14 @@ def load_page():
         if st.button("Transform and Clean Parquet Data"):
             df_cleaned = transform_and_clean_data(df)
             st.write(df_cleaned.head())
-    if st.button("Show dump plot"):
+    
+    # Toggle button to show/hide dump_plot
+    if st.button("Toggle dump plot"):
+        # Toggle the visibility state
+        st.session_state["show_dump_plot"] = not st.session_state["show_dump_plot"]
+
+    # Conditionally display dump_plot based on session state
+    if st.session_state["show_dump_plot"]:
         dump_plot()
     
 load_page()
