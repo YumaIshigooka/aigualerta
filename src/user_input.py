@@ -1,5 +1,8 @@
 import streamlit as st 
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
 
 # To execute this code you can use the command 'streamlit run user_input.py'
 
@@ -35,6 +38,26 @@ def load_parquet(file):
     df = pd.read_parquet(file)
     df = df.rename(columns=short_names)
     return df
+
+def dump_plot():
+    #Example
+    arr = np.random.normal(1, 1, size=100)
+    fig, ax = plt.subplots()
+    ax.hist(arr, bins=20)
+    st.pyplot(fig, use_container_width=False)
+
+    #Seaborn: Seaborn builds on top of a Matplotlib figure so you can display the charts in the same way
+    penguins = sns.load_dataset("penguins")
+    st.dataframe(penguins[["species", "flipper_length_mm"]].sample(6))
+
+    # Create Figure beforehand
+    fig = plt.figure(figsize=(9, 7))
+    sns.histplot(data=penguins, x="flipper_length_mm", hue="species", multiple="stack")
+    plt.title("Hello Penguins!")
+    st.pyplot(fig, use_container_width=False)
+
+    # st.dataframe(penguins[["species", "flipper_length_mm"]].sample(6))
+
 
 def transform_and_clean_data(df):
     # Check if the required columns are present in the dataframe
@@ -89,7 +112,7 @@ def transform_and_clean_data(df):
 
     return df_cleaned
 
-def main():
+def load_page():
     st.set_page_config(
     page_title="Aigualerta",
     page_icon="🧊",
@@ -114,6 +137,7 @@ def main():
         # Button to trigger transformation and cleaning for CSV data
         if st.button("Transform and Clean CSV Data"):
             df_cleaned = transform_and_clean_data(df)
+            st.write(df_cleaned.head())
 
     # Option to upload a Parquet file
     parquet_file = st.file_uploader("Upload a Parquet file", type="parquet")
@@ -125,4 +149,8 @@ def main():
         # Button to trigger transformation and cleaning for Parquet data
         if st.button("Transform and Clean Parquet Data"):
             df_cleaned = transform_and_clean_data(df)
-main()
+            st.write(df_cleaned.head())
+    if st.button("Show dump plot"):
+        dump_plot()
+    
+load_page()
