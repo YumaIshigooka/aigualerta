@@ -3,6 +3,27 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+import os # Library to auto-detect the tab files automatically
+import importlib.util # Library to auto-detect the tab files automatically
+
+TABS_DIR = os.path.join(os.path.dirname(__file__), "tabs")
+
+def load_tabs_from_directory(directory):
+    if not os.path.isdir(directory):
+        raise FileNotFoundError(f"The directory '{directory}' does not exist.")
+    
+    tabs = {}
+    for filename in os.listdir(directory):
+        if filename.endswith(".py") and filename.startswith("tab"):
+            tab_index = int(filename[3:-3])  # Extract the number from 'tabX.py'
+            module_name = filename[:-3]
+            module_spec = importlib.util.spec_from_file_location(module_name, os.path.join(directory, filename))
+            module = importlib.util.module_from_spec(module_spec)
+            module_spec.loader.exec_module(module)
+            tabs[tab_index] = module
+    return tabs
+
+tabs = load_tabs_from_directory(TABS_DIR)
 
 EXPECTED_COLUMNS = [
     'DATETIME',
@@ -155,23 +176,7 @@ def dump_plot_example():
     if st.session_state["show_dump_plot"]:
         dump_plot_generation()
 
-def load_page():
-
-    st.set_page_config(
-    page_title="Aigualerta",
-    page_icon="🧊",
-    layout="wide",
-    initial_sidebar_state="expanded",
-    )
-
+def load_page(i):
+    
     init_session_attr(st.session_state)
-
-    st.title("Aigualerta")
-    st.subheader("Project developed by: Jinsong Liu, Marc Gutierrez, Yuma Ishigooka, Adrià León and Suleyman Hasanov")
-
-    df = upload_data()
-
-    if df is not None:
-        df = adapt_data(df)
-
-    dump_plot_example()
+    tabs[i].load_page()
