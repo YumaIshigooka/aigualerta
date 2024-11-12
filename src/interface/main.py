@@ -2,7 +2,7 @@ import utils
 import tabs
 import streamlit as st
 
-# Execute the main with 'streamlit run .\src\main.py' on the terminal
+# Execute the main with 'streamlit run .\src\interface\main.py' on the terminal
 
 st.set_page_config(
     page_title="Aigualerta",
