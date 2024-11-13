@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+import pyarrow.dataset as ds
 import os # Library to auto-detect the tab files automatically
 import importlib.util # Library to auto-detect the tab files automatically
 
@@ -46,6 +47,20 @@ short_names = {
     'Data/Fecha/Date': 'HOUR/DATE',
     'Índex de lectura (L/h)/Índice de lectura (L/h)/Reading index (L/h)': 'CONSUMPTION',
 }
+
+def load_data_path():
+
+    # Get the absolute path to the root project directory
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    
+    # Define the full path to the Parquet file
+    file_path = os.path.join(project_root, "data", "lectures_horaries_ABD.parquet")
+
+    dataset = ds.dataset(file_path, format="parquet")
+    table = dataset.to_table().slice(0, 100)
+    df = table.to_pandas()
+    df = df.rename(columns=short_names)
+    return df
 
 def load_csv(file):
 
