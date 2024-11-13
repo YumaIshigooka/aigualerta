@@ -6,6 +6,8 @@ import seaborn as sns
 import os # Library to auto-detect the tab files automatically
 import importlib.util # Library to auto-detect the tab files automatically
 
+KMEANS_THRESHHOLD = 2.5
+WINDOW_SIZE = 4
 TABS_DIR = os.path.join(os.path.dirname(__file__), "tabs")
 
 def load_tabs_from_directory(directory):
@@ -26,7 +28,7 @@ def load_tabs_from_directory(directory):
 tabs = load_tabs_from_directory(TABS_DIR)
 
 EXPECTED_COLUMNS = [
-    'DATETIME',
+    'HOUR/DATE',
     'CONSUMPTION',
     'POLICY',
     'TECHNOLOGY',
@@ -41,7 +43,7 @@ short_names = {
     'Diàmetre comptador (cm)/Diámetro contador (cm)/Counter diameter (cm)': 'DIAMETER',
     'Ús/Uso/Use': 'USAGE',
     "Tipus d'habitatge/Tipo de vivienda/Type of housing": 'HOUSING',
-    'Data/Fecha/Date': 'DATETIME',
+    'Data/Fecha/Date': 'HOUR/DATE',
     'Índex de lectura (L/h)/Índice de lectura (L/h)/Reading index (L/h)': 'CONSUMPTION',
 }
 
@@ -139,17 +141,81 @@ def init_session_attr(session_state):
     if "show_dump_plot" not in session_state:
         st.session_state["show_dump_plot"] = False  # Default is hidden
         
-def adapt_data(df):
+def setup_data(df):
 
-    def transform_and_clean_data(df):
-        # TODO
+    def adapt_columns(df):
+
+        # Convert 'Data/Fecha/Date' column to datetime format
+        df['HOUR/DATE'] = pd.to_datetime(df['HOUR/DATE'])
+
+        df['WEEKDAY'] = df['HOUR/DATE'].dt.dayofweek
+        df['HOUR'] = df['HOUR/DATE'].dt.hour
+
+        df = df.drop(columns=['HOUR/DATE'])
+
+        # Add the flow (gradient of consumption) as a column.
+        df['FLOW'] = df.groupby('POLICY')['CONSUMPTION'].diff()
+        df = df.dropna(subset=["FLOW"])
+
+        return df
+
+    def check_missing_columns(df):
+        # Check if the required columns are present in the dataframe
+        missing_columns = [col for col in EXPECTED_COLUMNS if col not in df.columns]
+        
+        if missing_columns:
+            # If there are missing columns, display the missing ones and the expected columns
+            st.warning(f"The following columns are missing from the dataset: {', '.join(missing_columns)}")
+            st.write("Expected columns in the dataset:")
+            st.write(EXPECTED_COLUMNS)
+            return None
+
+        return df
+    
+    def drop_useless_columns(df):
+        # Remove bad data (gradient is less than 0, it is impossible that water goes backwards)
+        negative_policies = df[df['FLOW'] < 0]['POLICY'].values
+        df = df[~df['POLICY'].isin(negative_policies)]
+
+        # Null entries removal
+        df = df.dropna(how='any')
+
         return df
     
     # Button to trigger transformation and cleaning for CSV data
     if st.button("Transform and clean uploaded data"):
-        df = transform_and_clean_data(df)
-        st.write(df.head())
+        df = check_missing_columns(df)
+        if df is not None:
+            df = adapt_columns(df)
+            df = drop_useless_columns(df)
+            st.subheader("This is the adapted dataset")
+            st.write(df.head())
         return df
+    
+def setup_input(df):
+    # Create the sliding window dataset
+    result = []
+    for policy in df['POLICY'].unique():
+        policy_data = df[df['POLICY'] == policy]
+        flows = policy_data['FLOW'].values
+        technology = policy_data['TECHNOLOGY'].values
+        usage = policy_data['USAGE'].values
+        housing = policy_data['HOUSING'].values
+        consumption = policy_data['CONSUMPTION'].values
+        weekday = policy_data['WEEKDAY'].values
+        hours = policy_data['HOUR'].values
+
+        # Iterate over the range to capture each window of the specified size
+        for i in range(len(flows) - WINDOW_SIZE + 1):
+            window_data = {'POLICY': policy, 'TECHNOLOGY': technology[i], 'USAGE': usage[i],
+                           'HOUSING': housing[i],'CONSUMPTION': consumption[i],
+                           'WEEKDAY': weekday[i],'START_HOUR': hours[i]}  # Include starting hour
+            for j in range(WINDOW_SIZE):
+                window_data[f'FLOW_{j+1}'] = flows[i + j]
+            result.append(window_data)
+
+    # Convert the result to a DataFrame
+    return pd.DataFrame(result)
 
 def dump_plot_example():
     def dump_plot_generation():
