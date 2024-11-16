@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 # TODO Define necessary tabs for the final project
-tabs = utils.st.tabs(["Presentation", "Data Upload", "Dump data", "Loading data from path"])
+tabs = utils.st.tabs(["Presentation", "Data Upload", "Dump data", "Data from folder"])
 
 for i, tab in enumerate(tabs):
     with tab:
