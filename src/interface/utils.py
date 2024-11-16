@@ -29,7 +29,7 @@ def load_tabs_from_directory(directory):
 tabs = load_tabs_from_directory(TABS_DIR)
 
 EXPECTED_COLUMNS = [
-    'HOUR/DATE',
+    'DATETIME',
     'CONSUMPTION',
     'POLICY',
     'TECHNOLOGY',
@@ -44,7 +44,7 @@ short_names = {
     'Diàmetre comptador (cm)/Diámetro contador (cm)/Counter diameter (cm)': 'DIAMETER',
     'Ús/Uso/Use': 'USAGE',
     "Tipus d'habitatge/Tipo de vivienda/Type of housing": 'HOUSING',
-    'Data/Fecha/Date': 'HOUR/DATE',
+    'Data/Fecha/Date': 'DATETIME',
     'Índex de lectura (L/h)/Índice de lectura (L/h)/Reading index (L/h)': 'CONSUMPTION',
 }
 
@@ -161,12 +161,12 @@ def setup_data(df):
     def adapt_columns(df):
 
         # Convert 'Data/Fecha/Date' column to datetime format
-        df['HOUR/DATE'] = pd.to_datetime(df['HOUR/DATE'])
+        df['DATETIME'] = pd.to_datetime(df['DATETIME'])
 
         df['WEEKDAY'] = df['HOUR/DATE'].dt.dayofweek
         df['HOUR'] = df['HOUR/DATE'].dt.hour
 
-        df = df.drop(columns=['HOUR/DATE'])
+        # df = df.drop(columns=['HOUR/DATE'])
 
         # Add the flow (gradient of consumption) as a column.
         df['FLOW'] = df.groupby('POLICY')['CONSUMPTION'].diff()
@@ -207,30 +207,44 @@ def setup_data(df):
             st.write(df.head())
         return df
     
-def setup_input(df):
-    # Create the sliding window dataset
-    result = []
-    for policy in df['POLICY'].unique():
-        policy_data = df[df['POLICY'] == policy]
-        flows = policy_data['FLOW'].values
-        technology = policy_data['TECHNOLOGY'].values
-        usage = policy_data['USAGE'].values
-        housing = policy_data['HOUSING'].values
-        consumption = policy_data['CONSUMPTION'].values
-        weekday = policy_data['WEEKDAY'].values
-        hours = policy_data['HOUR'].values
+def setup_input(df, window_size = 4, output_path=None):
+    # Create a generator to yield rows for each window
+    def generate_rows():
+        for policy, group in df.groupby('POLICY'):
+            # Convert columns to NumPy arrays for efficient slicing
+            flows = group['FLOW'].to_numpy()
+            technology = group['TECHNOLOGY'].to_numpy()
+            usage = group['USAGE'].to_numpy()
+            housing = group['HOUSING'].to_numpy()
+            consumption = group['CONSUMPTION'].to_numpy()
+            hour_date = group['DATETIME'].to_numpy()
+            weekday = group['WEEKDAY'].to_numpy()
+            hours = group['HOUR'].to_numpy()
 
-        # Iterate over the range to capture each window of the specified size
-        for i in range(len(flows) - WINDOW_SIZE + 1):
-            window_data = {'POLICY': policy, 'TECHNOLOGY': technology[i], 'USAGE': usage[i],
-                           'HOUSING': housing[i],'CONSUMPTION': consumption[i],
-                           'WEEKDAY': weekday[i],'START_HOUR': hours[i]}  # Include starting hour
-            for j in range(WINDOW_SIZE):
-                window_data[f'FLOW_{j+1}'] = flows[i + j]
-            result.append(window_data)
+            # Generate sliding windows
+            for i in range(len(flows) - window_size + 1):
+                row = {
+                    'POLICY': policy,
+                    'TECHNOLOGY': technology[i],
+                    'USAGE': usage[i],
+                    'HOUSING': housing[i],
+                    'CONSUMPTION': consumption[i],
+                    'DATETIME': hour_date[i],
+                    'WEEKDAY': weekday[i],
+                    'START_HOUR': hours[i],
+                }
+                # Add flow values for the window
+                for j in range(window_size):
+                    row[f'FLOW_{j + 1}'] = flows[i + j]
+                yield row
 
-    # Convert the result to a DataFrame
-    return pd.DataFrame(result)
+    # Write to file or return as DataFrame
+    if output_path:
+        pd.DataFrame.from_records(generate_rows()).to_parquet(output_path, index=False)
+        print(f"Saved processed data to {output_path}")
+        return None
+    else:
+        return pd.DataFrame.from_records(generate_rows())
 
 def dump_plot_example():
     def dump_plot_generation():
