@@ -257,6 +257,27 @@ def dump_plot_example():
     if st.session_state["show_dump_plot"]:
         dump_plot_generation()
 
+def load_image(image_name, width=None, center=False):
+
+    base_path = os.path.dirname(__file__)  # Current script directory
+    image_path = os.path.join(base_path, "images", image_name)
+    usc = width is None
+
+
+    if not os.path.exists(image_path):
+        st.error(f"Image not found at: {image_path}")
+        return
+    
+    try:
+        if center:
+            col1, col2, col3 = st.columns([4, 2, 4])  # Ratio of the columns can be changed
+            with col2:  # Use the center column
+                st.image(image_path, use_column_width=usc, width=width)
+        else:
+            st.image(image_path, use_column_width=usc, width=width)
+    except Exception as e:
+        st.error(f"Error loading image: {e}")
+
 def load_page(i):
     
     init_session_attr(st.session_state)
