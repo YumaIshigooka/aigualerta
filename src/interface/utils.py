@@ -4,12 +4,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import pyarrow.dataset as ds
-import os # Library to auto-detect the tab files automatically
+import os # Library to auto-dectect the tab files automatically
 import importlib.util # Library to auto-detect the tab files automatically
+import pickle
+from sklearn.preprocessing import LabelEncoder
 
 KMEANS_THRESHHOLD = 2.5
 WINDOW_SIZE = 4
 TABS_DIR = os.path.join(os.path.dirname(__file__), "tabs")
+model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'models', 'model_test.sav'))
+model = pickle.load(open(model_path, 'rb'))
 
 def load_tabs_from_directory(directory):
     if not os.path.isdir(directory):
@@ -155,6 +159,14 @@ def upload_data():
 def init_session_attr(session_state):
     if "show_dump_plot" not in session_state:
         st.session_state["show_dump_plot"] = False  # Default is hidden
+    if "df" not in st.session_state:
+        st.session_state.df = None
+    if "df_setup" not in st.session_state:
+        st.session_state.df_setup = None
+    if "df_input" not in st.session_state:
+        st.session_state.df_input = None
+    if "df_predicted" not in st.session_state:
+        st.session_state.df_predicted = None
         
 def setup_data(df):
 
@@ -163,8 +175,8 @@ def setup_data(df):
         # Convert 'Data/Fecha/Date' column to datetime format
         df['DATETIME'] = pd.to_datetime(df['DATETIME'])
 
-        df['WEEKDAY'] = df['HOUR/DATE'].dt.dayofweek
-        df['HOUR'] = df['HOUR/DATE'].dt.hour
+        df['WEEKDAY'] = df['DATETIME'].dt.dayofweek
+        df['HOUR'] = df['DATETIME'].dt.hour
 
         # df = df.drop(columns=['HOUR/DATE'])
 
@@ -203,9 +215,7 @@ def setup_data(df):
         if df is not None:
             df = adapt_columns(df)
             df = drop_useless_columns(df)
-            st.subheader("This is the adapted dataset")
-            st.write(df.head())
-        return df
+            return df
     
 def setup_input(df, window_size = 4, output_path=None):
     # Create a generator to yield rows for each window
@@ -244,7 +254,28 @@ def setup_input(df, window_size = 4, output_path=None):
         print(f"Saved processed data to {output_path}")
         return None
     else:
-        return pd.DataFrame.from_records(generate_rows())
+        df = pd.DataFrame.from_records(generate_rows())
+        return df
+    
+def predict(df):
+    # Dynamically construct the FLOW column names
+    flow_columns = [f"FLOW_{i}" for i in range(1, WINDOW_SIZE + 1)]
+    # Define the full feature list
+    base_features = ['USAGE', 'HOUSING', 'WEEKDAY', 'START_HOUR']
+    features = base_features + flow_columns
+
+    # Select features and target
+    X = df[features]
+    label_encoders = {}
+
+    for col in X.select_dtypes(include='object').columns:  # Select categorical columns
+        le = LabelEncoder()
+        X.loc[:, col] = le.fit_transform(X[col])  # Use .loc[] for explicit assignment
+        label_encoders[col] = le
+
+    y = model.predict(X)
+    df['LEAK'] = y
+    return df
 
 def dump_plot_example():
     def dump_plot_generation():
