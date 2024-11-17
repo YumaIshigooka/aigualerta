@@ -167,6 +167,14 @@ def init_session_attr(session_state):
         st.session_state.df_input = None
     if "df_predicted" not in st.session_state:
         st.session_state.df_predicted = None
+    if "user_df" not in st.session_state:
+        st.session_state.user_df = None
+    if "user_df_setup" not in st.session_state:
+        st.session_state.user_df_setup = None
+    if "user_df_input" not in st.session_state:
+        st.session_state.user_df_input = None
+    if "user_df_predicted" not in st.session_state:
+        st.session_state.user_df_predicted = None
         
 def setup_data(df):
 
