@@ -1,6 +1,12 @@
-import utils
-import streamlit as st
+import sys
+import os
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+src_dir = os.path.abspath(os.path.join(current_dir, '../../'))
+sys.path.insert(0, src_dir)
+
+import streamlit as st
+from interface import utils
 
 def load_page():
 
@@ -40,7 +46,6 @@ def load_page():
 
     utils.load_image("ab_logo.png", width = 350)
     st.write("""
-             
     To [Aigües de Barcelona](https://www.aiguesdebarcelona.cat/ca/web/guest/) for providing their support and sharing their data with us.
     """)
 
