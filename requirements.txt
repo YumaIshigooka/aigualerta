@@ -7,3 +7,4 @@ seaborn
 streamlit
 importlib
 pytest
+pytest-cov
