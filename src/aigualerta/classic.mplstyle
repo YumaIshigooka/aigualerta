@@ -1,0 +1,24 @@
+lines.color: black
+patch.edgecolor: black
+
+text.color: black
+
+axes.facecolor: black
+axes.edgecolor: black
+axes.labelcolor: black
+axes.prop_cycle: cycler('color', 'bgrcmyk')
+
+xtick.color: black
+ytick.color: black
+
+grid.color: black
+
+figure.facecolor: white
+figure.edgecolor: white
+
+### Boxplots
+boxplot.boxprops.color: b
+boxplot.capprops.color: k
+boxplot.flierprops.color: b
+boxplot.flierprops.markeredgecolor: b
+boxplot.whiskerprops.color: b

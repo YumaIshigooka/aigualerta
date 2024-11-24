@@ -1,3 +1,4 @@
+import base64
 import streamlit as st 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -315,7 +316,6 @@ def load_image(image_name, width=None, center=False):
     base_path = os.path.dirname(__file__)  # Current script directory
     image_path = os.path.join(base_path, "images", image_name)
     usc = width is None
-
 
     if not os.path.exists(image_path):
         st.error(f"Image not found at: {image_path}")

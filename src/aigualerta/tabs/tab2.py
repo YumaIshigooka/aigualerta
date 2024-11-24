@@ -1,5 +1,5 @@
 import streamlit as st
-import utils
+from aigualerta import utils
 
 def load_page():
 

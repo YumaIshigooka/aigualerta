@@ -1,13 +1,7 @@
 from unittest import mock
 import unittest
-import sys
-import os
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-src_dir = os.path.abspath(os.path.join(current_dir, '../../../..'))
-sys.path.insert(0, src_dir)
-
-from src.interface.tabs.tab1 import load_page
+from aigualerta.tabs.tab1 import load_page
 import streamlit as st
 
 class TestLoadPage(unittest.TestCase):

@@ -1,5 +1,4 @@
-import utils
-import tabs
+from aigualerta import utils
 import streamlit as st
 
 # Execute the main with 'streamlit run .\src\interface\main.py' on the terminal

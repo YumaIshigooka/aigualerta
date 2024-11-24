@@ -1,43 +1,37 @@
 from unittest import mock
 import unittest
-import sys
-import os
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
-src_dir = os.path.abspath(os.path.join(current_dir, '../../../..'))
-sys.path.insert(0, src_dir)
-
-from src.interface.tabs.tab0 import load_page
-import streamlit as st
-
+from aigualerta.tabs import tab0
 
 class TestLoadPage(unittest.TestCase):
 
-    def test_load_page(self):
-        """Tests that the load_page function calls Streamlit elements with the correct types of arguments."""
+    @mock.patch('aigualerta.tabs.tab0.load_image_as_base64')  # Patch within tab0
+    def test_setup_welcome_page(self, mock_load_image):
+        """Test that setup_welcome_page correctly processes the markdown file."""
 
-        with mock.patch('streamlit.title') as mock_title, \
-             mock.patch('streamlit.subheader') as mock_subheader, \
-             mock.patch('streamlit.write') as mock_write, \
-             mock.patch('interface.utils.load_image') as mock_load_image: 
+        mock_load_image.side_effect = [
+            "mock_aigualerta_logo",
+            "mock_upf_logo",
+            "mock_ab_logo"
+        ]
+        md = "{aigualerta_logo} some text {upf_logo} more text {ab_logo}"
+        result = tab0.setup_welcome_page(md)
+        assert result == "mock_aigualerta_logo some text mock_upf_logo more text mock_ab_logo"
 
-            load_page()
+    @mock.patch('aigualerta.tabs.tab0.setup_welcome_page')
+    @mock.patch('aigualerta.tabs.tab0.load_file')
+    @mock.patch('streamlit.markdown') 
+    def test_load_page(self, mock_markdown, mock_load_file, mock_setup_welcome_page):
+        """Test that load_page correctly loads and displays the welcome page."""
 
-            # Assert that st.title was called with a string argument
-            mock_title.assert_called_once()
-            self.assertIsInstance(mock_title.call_args[0][0], str) 
+        # Mock load_file to return some test markdown content
+        mock_load_file.return_value = "Test markdown content {aigualerta_logo}"
 
-            # Assert that utils.load_image was called with the correct argument types
-            mock_load_image.assert_any_call(mock.ANY, width=mock.ANY, center=mock.ANY)
-            mock_load_image.assert_any_call(mock.ANY, width=mock.ANY)
-            mock_load_image.assert_any_call(mock.ANY, width=mock.ANY)
+        # Mock setup_welcome_page to return processed markdown
+        mock_setup_welcome_page.return_value = "Processed markdown with logo"
 
-            # Assert that st.subheader was called multiple times with string arguments
-            self.assertEqual(mock_subheader.call_count, 4)
-            for call in mock_subheader.call_args_list:
-                self.assertIsInstance(call[0][0], str)
+        tab0.load_page()
 
-            # Assert that st.write was called multiple times with string arguments
-            self.assertGreaterEqual(mock_write.call_count, 5)
-            for call in mock_write.call_args_list:
-                self.assertIsInstance(call[0][0], str)
+        # Assert that the functions were called with the expected arguments
+        mock_load_file.assert_called_once_with('resources/welcome_page.md')
+        mock_setup_welcome_page.assert_called_once_with("Test markdown content {aigualerta_logo}")
+        mock_markdown.assert_called_once_with("Processed markdown with logo", unsafe_allow_html=True)

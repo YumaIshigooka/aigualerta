@@ -1,12 +1,5 @@
-import sys
-import os
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
-src_dir = os.path.abspath(os.path.join(current_dir, '../../'))
-sys.path.insert(0, src_dir)
-
 import streamlit as st
-from interface import utils
+from aigualerta import utils, utils_plot
 
 # def upload_and_display_data():
 #     """Uploads data and displays the raw dataframe."""
@@ -87,5 +80,6 @@ def load_page():
                 if st.session_state.user_df_predicted is not None:
                     st.subheader("Prediction Results")
                     st.write(st.session_state.user_df_predicted.head())
+                    utils_plot.plot_durations(st.session_state.user_df_predicted)
     else:
         st.write("If you are willing to **load your dataset from the data folder**, please refer to the *data from folder* tab.")
