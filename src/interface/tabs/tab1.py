@@ -1,5 +1,7 @@
 import streamlit as st
 import utils
+import utils_plot
+
 
 def load_page():
 
@@ -34,6 +36,7 @@ def load_page():
                 # Show predictions if available
                 if st.session_state.user_df_predicted is not None:
                     st.subheader("Prediction Results")
-                    st.write(st.session_state.user_df_predicted.head())
+                    st.write(st.session_state.user_df_predicted[st.session_state.user_df_predicted["LEAK"] == True].head())
+                    utils_plot.plot_durations(st.session_state.user_df_predicted)
     else:
         st.write("If you are willing to **load your dataset from the data folder**, please refer to the *data from folder* tab.")
