@@ -14,11 +14,11 @@ else
 endif
 
 source := ./src
-interface := ./src/interface
-tabs := ./src/interface/tabs
+aigualerta := ./src/aigualerta
+tabs := ./src/aigualerta/tabs
 tests := ./tests
-testInterface := ./tests/src/interface
-testTabs := ./tests/src/interface/tabs
+testaigualerta := ./tests/src/aigualerta
+testTabs := ./tests/src/aigualerta/tabs
 
 .PHONY: test coverage htmlcov clean install start venv
 
@@ -45,10 +45,11 @@ htmlcov: coverage
 clean:
 	$(RM) .coverage htmlcov
 	$(RM) $(source)/__pycache__/
-	$(RM) $(interface)/__pycache__/
+	$(RM) $(aigualerta)/__pycache__/
 	$(RM) $(tabs)/__pycache__/
 	$(RM) $(tests)/__pycache__/
-	$(RM) $(testInterface)/__pycache__/
+	$(RM) $(aigualerta)/services/__pycache__/
+	$(RM) $(testaigualerta)/__pycache__/
 	$(RM) $(testTabs)/__pycache__/
 	$(RM) .pytest_cache
 	$(RM) dist build $(source)/*.egg-info

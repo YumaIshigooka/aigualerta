@@ -1,5 +1,6 @@
 from aigualerta import utils
 import streamlit as st
+from aigualerta.services import tab_handler
 
 # Execute the main with 'streamlit run .\src\interface\main.py' on the terminal
 
@@ -10,9 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# TODO Define necessary tabs for the final project
-tabs = utils.st.tabs(["Presentation", "Data Upload", "Data from folder"])
+tabs = st.tabs(["Welcome", "Upload Data", "Results"])
 
-for i, tab in enumerate(tabs):
-    with tab:
-        utils.load_page(i)
+tab_handler.init_session()
+tab_handler.tab_handler(tabs)

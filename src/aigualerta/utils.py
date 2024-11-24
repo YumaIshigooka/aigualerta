@@ -311,6 +311,7 @@ def dump_plot_example():
     if st.session_state["show_dump_plot"]:
         dump_plot_generation()
 
+
 def load_image(image_name, width=None, center=False):
 
     base_path = os.path.dirname(__file__)  # Current script directory

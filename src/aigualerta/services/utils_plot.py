@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 from streamlit_theme import st_theme
-from aigualerta.resource_handler import get_absolute_path
+from aigualerta.services.resource_handler import get_absolute_path
 
 def plot_durations(df_set):
     # Ensure the data is sorted by POLICY and DATETIME for proper processing

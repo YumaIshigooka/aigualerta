@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_theme import st_theme
-from aigualerta.resource_handler import load_image_as_base64, load_file
+from aigualerta.services.resource_handler import load_image_as_base64, load_file, get_theme
 
 def load_page():
     """"
@@ -11,12 +11,6 @@ def load_page():
     markdown_content = setup_welcome_page(markdown_content)
 
     st.markdown(markdown_content, unsafe_allow_html=True)
-
-def get_theme():
-    theme = st_theme()
-    if theme['base'] == 'dark':
-        return 'dark'
-    return 'light'
 
 def setup_welcome_page(md):
     theme = get_theme()
