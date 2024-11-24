@@ -50,6 +50,7 @@ clean:
 	$(RM) $(tests)/__pycache__/
 	$(RM) $(aigualerta)/services/__pycache__/
 	$(RM) $(testaigualerta)/__pycache__/
+	$(RM) $(testaigualerta)/services/__pycache__/
 	$(RM) $(testTabs)/__pycache__/
 	$(RM) .pytest_cache
 	$(RM) dist build $(source)/*.egg-info

@@ -1,3 +1,4 @@
+import pandas as pd
 from aigualerta import constants
 from pandas import read_parquet, read_csv
 import streamlit as st
@@ -46,7 +47,12 @@ def upload_data():
     df_csv = upload_csv()
     df_parquet = upload_parquet()
 
-    return df_csv or df_parquet
+    if df_csv is not None:
+        return df_csv
+    elif df_parquet is not None:
+        return df_parquet
+    else:
+        return None
 
 def upload_manager():
     new_df = upload_data()

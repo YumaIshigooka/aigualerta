@@ -12,10 +12,10 @@ def show_df(df, message=""):
     st.write(df)
 
 def display_input_data():
-    st.write(st.session_state.user_df)
+    show_df(st.session_state.user_df)
 
 def display_predicted_results():
-    st.write(st.session_state.predicted_df)
+    show_df(st.session_state.predicted_df)
 
 def display_leak_rows():
     predicted_df = st.session_state.predicted_df

@@ -1,9 +1,8 @@
 import streamlit as st
-from aigualerta import utils
-from aigualerta.tabs import tab0, tab1, tab2
+from aigualerta.tabs import tab0, tab1
 from streamlit_theme import st_theme
 
-tabs = [tab0, tab1, tab2]
+tabs = [tab0, tab1]
 
 def tab_handler(st_tabs):
     for i, tab in enumerate(st_tabs):
