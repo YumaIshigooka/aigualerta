@@ -17,12 +17,12 @@ def init_session():
         st.session_state["show_dump_plot"] = False  # Default is hidden
     if "df" not in st.session_state:
         st.session_state.df = None
-    if "df_setup" not in st.session_state:
-        st.session_state.df_setup = None
-    if "df_input" not in st.session_state:
-        st.session_state.df_input = None
-    if "df_predicted" not in st.session_state:
-        st.session_state.df_predicted = None
+    if "setup_df" not in st.session_state:
+        st.session_state.setup_df = None
+    if "input_df" not in st.session_state:
+        st.session_state.input_df = None
+    if "predicted_df" not in st.session_state:
+        st.session_state.predicted_df = None
     if "user_df" not in st.session_state:
         st.session_state.user_df = None
     if "user_df_setup" not in st.session_state:

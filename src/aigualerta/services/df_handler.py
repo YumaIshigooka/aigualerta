@@ -9,9 +9,6 @@ model = pickle.load(open(constants.model_path, 'rb'))
 def rename_columns(df):
     return df.rename(columns = constants.short_names)
 
-def is_df_loaded():
-    return (st.session_state.user_df is not None)
-
 def transform_columns(df):
 
     # Convert 'Data/Fecha/Date' column to datetime format
@@ -53,7 +50,6 @@ def drop_defective_rows(df):
 
 def prepare_data(df):
     # Button to trigger transformation and cleaning for CSV data
-    # if st.button("Transform and clean uploaded data"):
     df = rename_columns(df)
     if not is_missing_columns(df):
         df = transform_columns(df)
@@ -121,9 +117,14 @@ def predict(df):
     df['LEAK'] = y
     return df
 
-def get_results(df):
+def compute_results(df):
     df = prepare_data(df)
+    st.session_state.setup_df = df
+
     df = setup_input(df)
+    st.session_state.input_df = df
+    
     df = predict(df)
+    st.session_state.predicted_df = df
 
     return df

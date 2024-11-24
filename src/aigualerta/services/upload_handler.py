@@ -2,6 +2,12 @@ from aigualerta import constants
 from pandas import read_parquet, read_csv
 import streamlit as st
 
+def is_user_df_loaded():
+    return (st.session_state.user_df is not None)
+
+def is_predicted_df_loaded():
+    return (st.session_state.predicted_df is not None)
+
 def upload_csv():    
     """
     Displays a file uploader for uploading a CSV file and loads the data into a DataFrame if uploaded.
@@ -41,3 +47,11 @@ def upload_data():
     df_parquet = upload_parquet()
 
     return df_csv or df_parquet
+
+def upload_manager():
+    new_df = upload_data()
+    if is_user_df_loaded() and new_df is None:
+        st.warning('Your dataframe has not been loaded correctly')
+        return
+
+    st.session_state.user_df = new_df

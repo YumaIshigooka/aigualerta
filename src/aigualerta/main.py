@@ -1,4 +1,3 @@
-from aigualerta import utils
 import streamlit as st
 from aigualerta.services import tab_handler
 
@@ -11,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-tabs = st.tabs(["Welcome", "Upload Data", "Results"])
+tabs = st.tabs(["Welcome", "Upload/Process Data"])
 
 tab_handler.init_session()
 tab_handler.tab_handler(tabs)
