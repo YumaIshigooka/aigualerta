@@ -4,20 +4,15 @@ import pandas as pd
 from sklearn.calibration import LabelEncoder
 import streamlit as st
 
-model = pickle.load(open(constants.model_path, 'rb'))
-
 def rename_columns(df):
     return df.rename(columns = constants.short_names)
 
 def transform_columns(df):
-
     # Convert 'Data/Fecha/Date' column to datetime format
     df['DATETIME'] = pd.to_datetime(df['DATETIME'])
 
     df['WEEKDAY'] = df['DATETIME'].dt.dayofweek
     df['HOUR'] = df['DATETIME'].dt.hour
-
-    # df = df.drop(columns=['HOUR/DATE'])
 
     # Add the flow (gradient of consumption) as a column.
     df['FLOW'] = df.groupby('POLICY')['CONSUMPTION'].diff()
@@ -57,7 +52,7 @@ def prepare_data(df):
         return df
     return None
     
-def setup_input(df, window_size = 4, output_path=None):
+def setup_input(df, window_size = 4):
     # Create a generator to yield rows for each window
     def generate_rows():
         for policy, group in df.groupby('POLICY'):
@@ -87,15 +82,9 @@ def setup_input(df, window_size = 4, output_path=None):
                 for j in range(window_size):
                     row[f'FLOW_{j + 1}'] = flows[i + j]
                 yield row
-
-    # Write to file or return as DataFrame
-    if output_path:
-        pd.DataFrame.from_records(generate_rows()).to_parquet(output_path, index=False)
-        print(f"Saved processed data to {output_path}")
-        return None
-    else:
-        df = pd.DataFrame.from_records(generate_rows())
-        return df
+    
+    df = pd.DataFrame.from_records(generate_rows())
+    return df
 
 def predict(df):
     # Dynamically construct the FLOW column names
@@ -113,7 +102,7 @@ def predict(df):
         X.loc[:, col] = le.fit_transform(X[col])  # Use .loc[] for explicit assignment
         label_encoders[col] = le
 
-    y = model.predict(X)
+    y = constants.model.predict(X)
     df['LEAK'] = y
     return df
 

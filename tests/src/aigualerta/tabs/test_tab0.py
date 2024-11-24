@@ -4,10 +4,12 @@ from aigualerta.tabs import tab0
 
 class TestLoadPage(unittest.TestCase):
 
-    @mock.patch('aigualerta.tabs.tab0.load_image_as_base64')  # Patch within tab0
-    def test_setup_welcome_page(self, mock_load_image):
+    @mock.patch('aigualerta.tabs.tab0.get_theme')
+    @mock.patch('aigualerta.tabs.tab0.load_image_as_base64')
+    def test_setup_welcome_page(self, mock_load_image, mock_theme):
         """Test that setup_welcome_page correctly processes the markdown file."""
 
+        mock_theme.return_value = 'dark'
         mock_load_image.side_effect = [
             "mock_aigualerta_logo",
             "mock_upf_logo",
@@ -15,6 +17,7 @@ class TestLoadPage(unittest.TestCase):
         ]
         md = "{aigualerta_logo} some text {upf_logo} more text {ab_logo}"
         result = tab0.setup_welcome_page(md)
+        print(result)
         assert result == "mock_aigualerta_logo some text mock_upf_logo more text mock_ab_logo"
 
     @mock.patch('aigualerta.tabs.tab0.setup_welcome_page')

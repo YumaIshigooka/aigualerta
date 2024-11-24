@@ -1,3 +1,4 @@
+import pickle
 from aigualerta.services.resource_handler import get_absolute_path
 
 EXPECTED_COLUMNS = [
@@ -24,3 +25,5 @@ KMEANS_THRESHHOLD = 2.5
 WINDOW_SIZE = 4
 
 model_path = get_absolute_path('../../data/models/model_test.sav')
+
+model = pickle.load(open(model_path, 'rb'))
