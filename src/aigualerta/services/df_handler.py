@@ -117,14 +117,19 @@ def predict(df):
     df['LEAK'] = y
     return df
 
-def compute_results(df):
+def compute_results(df, loading_bar):
     df = prepare_data(df)
     st.session_state.setup_df = df
 
+    loading_bar.progress(33 + 1, text="Setting up")
     df = setup_input(df)
     st.session_state.input_df = df
     
+    loading_bar.progress(66, text="Predicting")
     df = predict(df)
     st.session_state.predicted_df = df
 
+    loading_bar.progress(100, text="Done!")
+    st.balloons()
+    loading_bar.empty()
     return df

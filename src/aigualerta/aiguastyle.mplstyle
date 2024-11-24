@@ -13,7 +13,7 @@ ytick.color: white
 
 grid.color: white
 
-figure.facecolor: #0e1117
+figure.facecolor: 0e1117
 figure.edgecolor: black
 
 ### Boxplots

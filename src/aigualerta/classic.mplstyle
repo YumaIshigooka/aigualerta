@@ -3,7 +3,7 @@ patch.edgecolor: black
 
 text.color: black
 
-axes.facecolor: black
+axes.facecolor: white
 axes.edgecolor: black
 axes.labelcolor: black
 axes.prop_cycle: cycler('color', 'bgrcmyk')

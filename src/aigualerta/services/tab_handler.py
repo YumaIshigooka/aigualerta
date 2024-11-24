@@ -1,6 +1,7 @@
 import streamlit as st
 from aigualerta import utils
 from aigualerta.tabs import tab0, tab1, tab2
+from streamlit_theme import st_theme
 
 tabs = [tab0, tab1, tab2]
 
@@ -31,3 +32,6 @@ def init_session():
         st.session_state.user_df_input = None
     if "user_df_predicted" not in st.session_state:
         st.session_state.user_df_predicted = None
+
+    st.session_state.theme = st_theme()
+    

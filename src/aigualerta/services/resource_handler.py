@@ -1,6 +1,6 @@
 import base64
 import os
-from streamlit_theme import st_theme
+import streamlit as st
 
 def load_file(file_path: str):
     """
@@ -27,8 +27,11 @@ def load_image_as_base64(file_path):
     return f"data:image/png;base64,{encoded_string}"
 
 def get_theme():
-    theme = st_theme()
+    theme = st.session_state.theme
     if theme is None or theme['base'] != 'dark':
         return 'light'
 
     return 'dark'
+
+def theme():
+    return st.session_state.theme

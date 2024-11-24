@@ -3,8 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from streamlit_theme import st_theme
-from aigualerta.services.resource_handler import get_absolute_path
+from aigualerta.services.resource_handler import get_absolute_path, get_theme
 
 def plot_durations(df_set):
     # Ensure the data is sorted by POLICY and DATETIME for proper processing
@@ -28,18 +27,16 @@ def plot_durations(df_set):
 
     dark = get_absolute_path('aiguastyle.mplstyle')
     light = get_absolute_path('classic.mplstyle')
-    # Use dark theme from matplotlib
-    theme = st_theme()
-    print(theme['base'])
+
+    theme = get_theme()
     # Set matplotlib style based on theme
-    if theme['base'] == 'dark':
+    if theme == 'dark':
         plt.style.use(dark)  # Use dark theme
     else:
         plt.style.use(light)  # Use default light theme
-    
 
     # Create a figure for multiple subplots
-    fig, axes = plt.subplots(2, 2, figsize=(20, 16), facecolor='#0e1117')  # Adjust the size for more plots
+    fig, axes = plt.subplots(2, 2, figsize=(20, 16))  # Adjust the size for more plots
     axes = axes.flatten()  # Flatten axes array for easy indexing
 
 

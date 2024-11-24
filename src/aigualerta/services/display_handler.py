@@ -1,6 +1,7 @@
 import streamlit as st
 from aigualerta.services.upload_handler import upload_manager, is_user_df_loaded
 from aigualerta.services.df_handler import compute_results
+from aigualerta.services.utils_plot import plot_durations
 
 def show_df(df, message=""):
     """
@@ -21,7 +22,7 @@ def display_leak_rows():
     st.write(predicted_df[predicted_df['LEAK']])
 
 def subtab_handler():
-    subtab1, subtab2, subtab3 = st.tabs(["Input Data", "Predicted Results", "Rows that have leak"])
+    subtab1, subtab2, subtab3, subtab4 = st.tabs(["Input Data", "Predicted Results", "Rows that have leak", "Statistics"])
 
     with subtab1:
         display_input_data()
@@ -31,6 +32,10 @@ def subtab_handler():
 
     with subtab3:
         display_leak_rows()
+
+    with subtab4:
+        plot_durations(st.session_state.predicted_df)
+
 
 def is_process_data_button_pressed():
     if is_user_df_loaded():
@@ -45,5 +50,6 @@ def user_df_has_been_uploaded():
     return is_user_df_loaded()
 
 def show_results():
-    compute_results(st.session_state.user_df)
+    loading_bar = st.progress(1, text="Preparing")
+    compute_results(st.session_state.user_df, loading_bar)
     subtab_handler()
